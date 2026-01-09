@@ -23,15 +23,15 @@ class AdminPanelTest(TestCase):
         """
         url = reverse("admin:taxi_driver_changelist")
         response = self.client.get(url)
-        self.assertContains(response, self.driver.license_number)  # type: ignore
+        self.assertContains(response, self.driver.license_number)
 
     def test_driver_license_number_detail(self):
         """
         Test driver's that license_number is in change view on admin page
         """
-        url = reverse("admin:taxi_driver_change", args=[self.driver.id])  # type: ignore
+        url = reverse("admin:taxi_driver_change", args=[self.driver.id])
         response = self.client.get(url)
-        self.assertContains(response, self.driver.license_number)  # type: ignore
+        self.assertContains(response, self.driver.license_number)
 
     def test_driver_license_number_in_add_user(self):
         """

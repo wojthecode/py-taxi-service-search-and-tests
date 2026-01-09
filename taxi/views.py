@@ -51,7 +51,7 @@ class ManufacturerListView(LoginRequiredMixin, generic.ListView):
             initial={"name": name}
         )
         return context
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
         form = ManufacturerSearchForm(self.request.GET)
@@ -90,7 +90,7 @@ class CarListView(LoginRequiredMixin, generic.ListView):
             initial={"model": model}
         )
         return context
-    
+
     def get_queryset(self):
         queryset = Car.objects.select_related("manufacturer")
         form = CarSearchForm(self.request.GET)
@@ -133,7 +133,7 @@ class DriverListView(LoginRequiredMixin, generic.ListView):
             initial={"username": username}
         )
         return context
-    
+
     def get_queryset(self):
         queryset = super().get_queryset()
         form = DriverSearchForm(self.request.GET)
@@ -162,7 +162,7 @@ class DriverLicenseUpdateView(LoginRequiredMixin, generic.UpdateView):
 
 class DriverDeleteView(LoginRequiredMixin, generic.DeleteView):
     model = Driver
-    success_url = reverse_lazy("")
+    success_url = reverse_lazy("taxi:driver-list")
 
 
 @login_required

@@ -1,4 +1,3 @@
-from urllib import response
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -59,7 +58,6 @@ class PublicCarTest(TestCase):
     def setUp(self) -> None:
         Manufacturer.objects.create(name="test", country="test")
         Car.objects.create(model="model", manufacturer_id=1)
-        
 
     def test_list_login_require(self):
         response = self.client.get(CAR_LIST_URL)
@@ -159,4 +157,56 @@ class PrivateDriverTest(TestCase):
         self.assertEqual(
             list(response.context["driver_list"]),
             list(drivers)
+        )
+
+
+class PrivateManufacturerTest(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+        test_user = Driver.objects.create_user(
+            username="test.user",
+            password="pass321",
+        )
+        self.client.force_login(test_user)
+
+        Manufacturer.objects.create(name="Daimler", country="Germany")
+        Manufacturer.objects.create(name="Ford Motor Company", country="USA")
+        Manufacturer.objects.create(name="Mazda", country="Japan")
+        Manufacturer.objects.create(name="Renault", country="France")
+        Manufacturer.objects.create(name="General Motors", country="USA")
+
+    def test_search(self):
+        manufacturers = Manufacturer.objects.filter(name__icontains="motor")
+        response = self.client.get(MANUFACTURER_LIST_URL + "?name=motor")
+        self.assertEqual(
+            list(response.context["manufacturer_list"]),
+            list(manufacturers)
+        )
+
+
+class PrivateCarTest(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+
+        test_user = Driver.objects.create_user(
+            username="test.user",
+            password="pass321",
+        )
+        self.client.force_login(test_user)
+
+        Manufacturer.objects.create(name="Toyota", country="Toyota")
+
+        Car.objects.create(model="Toyota Yaris", manufacturer_id=1)
+        Car.objects.create(model="Toyota Corolla", manufacturer_id=1)
+        Car.objects.create(model="Toyota RAV-4", manufacturer_id=1)
+        Car.objects.create(model="Toyota Mirai", manufacturer_id=1)
+        Car.objects.create(model="Toyota C-HR", manufacturer_id=1)
+
+    def test_search(self):
+        cars = Car.objects.filter(model__icontains="ra")
+        response = self.client.get(CAR_LIST_URL + "?model=ra")
+        self.assertEqual(
+            list(response.context["car_list"]),
+            list(cars)
         )
